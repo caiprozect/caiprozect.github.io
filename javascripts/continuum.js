@@ -105,7 +105,7 @@ var probeRight = vis.append("svg:line")
 
 var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Play")
-  .style("position", "absolute")
+  .style("position", "relative")
   .style("top", -40)
   .style("left", canvasWidth/2)
   .style("height", 25)
