@@ -107,7 +107,7 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Play")
   .style("position", "absolute")
   .style("top", -40)
-  .style("left", canvasWidth / 2 - 10)
+  .style("left", 700)
   .style("height", 25)
   .on("click", handlePlay);
 
