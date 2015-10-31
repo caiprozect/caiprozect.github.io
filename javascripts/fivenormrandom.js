@@ -1,6 +1,6 @@
 var CONTINUUM = (function() {
 
-var canvasWidth = $(window).width()*0.5;
+var canvasWidth = $(window).width() < 600 ? $(window).width()*0.9 : $(window).width()*0.5;
 var canvasHeight = $(window).height()*0.8;
 var MARGINS =
   {
