@@ -1,13 +1,13 @@
 var CONTINUUM = (function() {
 
 var canvasWidth = $(window).width() < 600 ? $(window).width()*0.9 : $(window).width()*0.5;
-var canvasHeight = $(window).height()*0.8;
+var canvasHeight = $(window).width() < 600 ? $(window).width()*0.9 : $(window).height()*0.8;
 var MARGINS =
   {
     top: 2,
-    right: 10,
+    right: 2,
     bottom: 2,
-    left: 40
+    left: 2
   };
 
 var plotWidth = canvasWidth - MARGINS.left - MARGINS.right;
