@@ -79,10 +79,14 @@ function handlePlay()
   updateButtons();
   resetToInitialState();
   drawDots();
+  drawLine();
 }
 
 var points = [];
+var xSeries = [];
+var ySeries = [];
 var dots = [];
+var trendlines = [];
 var pointRadius = 10;
 var pointsNum = 5;
 
@@ -90,15 +94,16 @@ function drawDots()
 {
   for (var i = 0; i < pointsNum; i++)
   {
-    var xVal = xRange(Math.random()*2-1)
-    var yVal = yRange(Math.random()*2-1)
+    var xVal = Math.random()*2-1
+    var yVal = Math.random()*2-1
 
-    points.push((xVal, yVal))
+    xSeries.push(xVal)
+    ySeries.push(yVal)
 
     var circle = 
       vis.append("circle")
-        .attr("cx", xVal)
-        .attr("cy", yVal)
+        .attr("cx", xRange(xVal))
+        .attr("cy", yRange(yVal))
         .attr("r", pointRadius)
         .attr("stroke", "none")
         .attr("fill", colorScale(i))
@@ -119,6 +124,33 @@ function drawDots()
   return true;
 }
 
+function drawLine()
+{
+ var leastSquaresCoeff = leastSquares(xSeries, ySeries);
+    
+    // apply the reults of the least squares regression
+    var x1 = -1;
+    var y1 = leastSquaresCoeff[0]*(-1) + leastSquaresCoeff[1];
+    var x2 = 1;
+    var y2 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
+    var trendData = [[x1,y1,x2,y2]];
+    
+    var trendline = vis.selectAll(".trendline")
+      .data(trendData);
+      
+    trendline.enter()
+      .append("line")
+      .attr("class", "trendline")
+      .attr("x1", function(d) { return xRange(d[0]); })
+      .attr("y1", function(d) { return yRange(d[1]); })
+      .attr("x2", function(d) { return xRange(d[2]); })
+      .attr("y2", function(d) { return yRange(d[3]); })
+      .attr("stroke", "teal")
+      .attr("stroke-width", 2);
+ 
+    trendlines.push(trendline)
+}
+
 function resetToInitialState()
 {
   for (var i = 0; i < dots.length; i++)
@@ -126,7 +158,36 @@ function resetToInitialState()
     dots[i].remove();
   }
 
+  if (trendlines.length > 0){
+    trendlines[0].remove();
+  }
+
   dots = [];
+  trendlines = [];
+  xSeries = [];
+  ySeries = [];
 }
+
+function leastSquares(xSeries, ySeries) {
+    var reduceSumFunc = function(prev, cur) { return prev + cur; };
+    
+    var xBar = xSeries.reduce(reduceSumFunc) * 1.0 / xSeries.length;
+    var yBar = ySeries.reduce(reduceSumFunc) * 1.0 / ySeries.length;
+
+    var ssXX = xSeries.map(function(d) { return Math.pow(d - xBar, 2); })
+      .reduce(reduceSumFunc);
+    
+    var ssYY = ySeries.map(function(d) { return Math.pow(d - yBar, 2); })
+      .reduce(reduceSumFunc);
+      
+    var ssXY = xSeries.map(function(d, i) { return (d - xBar) * (ySeries[i] - yBar); })
+      .reduce(reduceSumFunc);
+      
+    var slope = ssXY / ssXX;
+    var intercept = yBar - (xBar * slope);
+    var rSquare = Math.pow(ssXY, 2) / (ssXX * ssYY);
+    
+    return [slope, intercept, rSquare];
+  }
 
 }) ();
