@@ -49,6 +49,15 @@ vis.append('svg:g')
   .style("opacity", 0.6)
   .call(yAxis);
 
+var hintButton = d3.select('#animatedWrapper').insert("button", ":first-child")
+  .text("Hint")
+  .style("position", "absolute")
+  .style("top", -40)
+  .style("left", '50%')
+  //.style("height", '10%')
+  //.style("width", '10%')
+  .on("click", hintPlay);
+
 var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Play")
   .style("position", "relative")
@@ -82,11 +91,17 @@ function handlePlay()
   drawLine();
 }
 
+function hintPlay()
+{
+  drawPerpen();
+}
+
 var points = [];
 var xSeries = [];
 var ySeries = [];
 var dots = [];
 var trendlines = [];
+var perpens = [];
 var pointRadius = 10;
 var pointsNum = 5;
 
@@ -151,6 +166,25 @@ function drawLine()
     trendlines.push(trendline)
 }
 
+function drawPerpen(){
+  var leastSquaresCoeff = leastSquares(xSeries, ySeries);
+
+  for (var i=0; i < pointsNum; i++){
+    x2 = (xSeries[i]/leastSquaresCoeff[0]+ySeries[i]-leastSquaresCoeff[1])/(leastSquaresCoeff[0]+1/leastSquaresCoeff[0]);
+    y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
+
+    var perpen = vis.append("line")
+                  .attr("x1", xRange(xSeries[i]))
+                  .attr("y1", yRange(ySeries[i]))
+                  .attr("x2", xRange(x2))
+                  .attr("y2", yRange(y2))
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-width", 1);
+
+    perpens.push(perpen);
+  }
+}
+
 function resetToInitialState()
 {
   for (var i = 0; i < dots.length; i++)
@@ -162,8 +196,14 @@ function resetToInitialState()
     trendlines[0].remove();
   }
 
+  for (var i = 0; i < perpens.length; i++)
+  {
+    perpens[i].remove();
+  }
+
   dots = [];
   trendlines = [];
+  perpens = [];
   xSeries = [];
   ySeries = [];
 }
