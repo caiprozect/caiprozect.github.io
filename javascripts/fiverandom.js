@@ -1,7 +1,7 @@
 var CONTINUUM = (function() {
 
-var canvasWidth = $(window).width() < 600 ? $(window).width()*0.9 : $(window).width()*0.5;
-var canvasHeight = $(window).width() < 600 ? $(window).width()*0.9 : $(window).height()*0.8;
+var canvasWidth = $(window).width() < 600 ? $(window).width()*0.9 : 700;
+var canvasHeight = $(window).width() < 600 ? $(window).width()*0.9 : 700;
 var MARGINS =
   {
     top: 2,
@@ -173,6 +173,20 @@ function drawPerpen(){
     x2 = (xSeries[i]/leastSquaresCoeff[0]+ySeries[i]-leastSquaresCoeff[1])/(leastSquaresCoeff[0]+1/leastSquaresCoeff[0]);
     y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
 
+    x1 = dots[i].attr("cx")
+    y1 = dots[i].attr("cy")
+
+    dots[i].transition()
+        .duration(1500)
+        .attr("cx", xRange(x2))
+        .attr("cy", yRange(y2))
+        .transition()
+        .delay(2500)
+        .duration(1500)
+        .attr("cx", x1)
+        .attr("cy", y1)
+
+    /*  
     var perpen = vis.append("line")
                   .attr("x1", xRange(xSeries[i]))
                   .attr("y1", yRange(ySeries[i]))
@@ -180,8 +194,9 @@ function drawPerpen(){
                   .attr("y2", yRange(y2))
                   .attr("stroke", "steelblue")
                   .attr("stroke-width", 1);
-
+    
     perpens.push(perpen);
+    */
   }
 }
 
