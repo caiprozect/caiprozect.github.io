@@ -1,7 +1,7 @@
 var CONTINUUM = (function() {
 
-var canvasWidth = 700;
-var canvasHeight = 700;
+var canvasWidth = $(window).width()*0.5;
+var canvasHeight = $(window).height()*0.8;
 var MARGINS =
   {
     top: 2,
@@ -54,8 +54,8 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .style("position", "relative")
   .style("top", -40)
   .style("left", canvasWidth/2)
-  .style("height", '10%')
-  .style("width", '10%')
+  //.style("height", '10%')
+  //.style("width", '10%')
   .on("click", handlePlay);
 
 var isPlaying = false;
