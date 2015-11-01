@@ -1,7 +1,7 @@
-var CONTINUUM = (function() {
-
-var canvasWidth = $(window).width() < 600 ? $(window).width()*0.9 : 700;
-var canvasHeight = $(window).width() < 600 ? $(window).width()*0.9 : 700;
+var fiveR = (function() {
+var devSize = Math.min($(window).width(), $(window).height());
+var canvasWidth =  devSize < 700 ? devSize * 0.8 : 700;
+var canvasHeight = devSize < 700 ? devSize * 0.8 : 700;
 var MARGINS =
   {
     top: 2,
@@ -85,6 +85,7 @@ function handlePlay()
   }
 
   isPlaying = true;
+  pointsNum = $('#numPointsforR').val();
   updateButtons();
   resetToInitialState();
   drawDots();
