@@ -15,9 +15,14 @@ var plotHeight = canvasHeight - MARGINS.top - MARGINS.bottom;
 
 var xRange = d3.scale.linear().range([MARGINS.left+6, plotWidth-6]);
 var yRange = d3.scale.linear().range([plotHeight-6, MARGINS.top+6]);
+var xbarRange = d3.scale.linear().range([MARGINS.left+6, plotWidth-6]);
+var ybarRange = d3.scale.linear().range([plotHeight/2, MARGINS.top+6]);
 
 xRange.domain([-4, 4]);
 yRange.domain([-4, 4]);
+var sliceNum = 16;
+xbarRange.domain([0, sliceNum]);
+ybarRange.domain([0, 50]);
 
 var xAxis = d3.svg.axis()
   .scale(xRange)
@@ -90,6 +95,7 @@ function handlePlay()
   resetToInitialState();
   drawDots();
   drawLine();
+  drawBars();
 }
 
 function hintPlay()
@@ -103,6 +109,12 @@ var ySeries = [];
 var dots = [];
 var trendlines = [];
 var perpens = [];
+var slopes = {};
+
+for (var i=0; i<sliceNum; i++){
+  slopes[i.toString()] = 0
+}
+
 var pointRadius = 10;
 var pointsNum = 5;
 
@@ -222,6 +234,23 @@ function drawPerpen(){
   }
 }
 
+function drawBars(){
+  slopes_data = [];
+  for (i=0; i<sliceNum; i++){
+    slopes_data.push([i, slopes[i.toString()]]);
+  }
+
+  vis.selectAll("rect")
+        .data(slopes_data)
+      .enter().append("rect")
+      .attr("x", function(d){return xbarRange(d[0]);})
+      .attr("y", function(d){return ybarRange(d[1]);})
+      .attr("width", function(d){return xbarRange(1)-8;})
+      .attr("height", function(d){return plotHeight/2-ybarRange(d[1]);})
+      .attr("fill", "steelblue")
+      .attr("opacity", 0.6)
+}
+
 function resetToInitialState()
 {
   for (var i = 0; i < dots.length; i++)
@@ -243,6 +272,7 @@ function resetToInitialState()
   ySeries = [];
   dots = [];
   perpens = [];
+  vis.selectAll("rect").remove();
 }
 
 function leastSquares(xSeries, ySeries) {
@@ -263,6 +293,10 @@ function leastSquares(xSeries, ySeries) {
     var slope = ssXY / ssXX;
     var intercept = yBar - (xBar * slope);
     var rSquare = Math.pow(ssXY, 2) / (ssXX * ssYY);
+
+    var barX = Math.floor((Math.atan(slope)+Math.PI/2)*16/Math.PI);
+
+    slopes[barX.toString()] += 1;
     
     return [slope, intercept, rSquare];
   }
