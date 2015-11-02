@@ -95,7 +95,7 @@ function handlePlay()
   resetToInitialState();
   drawDots();
   drawLine();
-  drawBars();
+  //drawBars();
 }
 
 function hintPlay()
@@ -199,6 +199,8 @@ function drawLine()
       .attr("stroke-width", 2);
  
     trendlines.push(trendline)
+
+    drawCluster(leastSquaresCoeff[0]);
 }
 
 function drawPerpen(){
@@ -251,6 +253,43 @@ function drawBars(){
       .attr("opacity", 0.6)
 }
 
+function drawCluster(slope){
+  x = 4/2*Math.cos(Math.atan(slope));
+  y = 4/2*Math.sin(Math.atan(slope));
+
+  vis.append("line")
+    .attr("class", "phase-line")
+    .attr("x1", xRange(0))
+    .attr("y1", yRange(0))
+    .attr("x2", xRange(x))
+    .attr("y2", yRange(y))
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 3)
+    .attr("opacity", 0.6)
+  vis.append("line")
+    .attr("class", "phase-line")
+    .attr("x1", xRange(0))
+    .attr("y1", yRange(0))
+    .attr("x2", xRange(-x))
+    .attr("y2", yRange(-y))
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 3)
+    .attr("opacity", 0.6)
+
+  vis.append("circle")
+    .attr("cx", xRange(x))
+    .attr("cy", yRange(y))
+    .attr("fill", "steelblue")
+    .attr("r", 5)
+    .attr("opacity", 0.3)
+  vis.append("circle")
+    .attr("cx", xRange(-x))
+    .attr("cy", yRange(-y))
+    .attr("fill", "steelblue")
+    .attr("r", 5)
+    .attr("opacity", 0.3)
+}
+
 function resetToInitialState()
 {
   for (var i = 0; i < dots.length; i++)
@@ -273,6 +312,7 @@ function resetToInitialState()
   dots = [];
   perpens = [];
   vis.selectAll("rect").remove();
+  vis.selectAll(".phase-line").remove();
 }
 
 function leastSquares(xSeries, ySeries) {
