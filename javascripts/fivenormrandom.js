@@ -97,7 +97,7 @@ function updateButtons()
 {
   var className = isPlaying ? "disabled" : "active";
   playButton.attr("class", className); 
-  var barBName = barShow ? "deBar" : "Bar";
+  var barBName = barShow ? "Scatter" : "Bar";
   barButton.text(barBName);
 }
 
@@ -279,7 +279,7 @@ function drawBars(){
       .attr("height", function(d){return plotHeight/2-ybarRange(d[1]);})
       .attr("fill", "steelblue")
       .attr("stroke", "white")
-      .attr("opacity", 0)
+      .attr("opacity", barShow ? 0.6 : 0)
 }
 
 function drawCluster(slope){
@@ -294,7 +294,7 @@ function drawCluster(slope){
     .attr("y2", yRange(y))
     .attr("stroke", "steelblue")
     .attr("stroke-width", 3)
-    .attr("opacity", 0.6)
+    .attr("opacity", barShow ? 0 : 0.6)
   vis.append("line")
     .attr("class", "phase-line")
     .attr("x1", xRange(0))
@@ -303,22 +303,34 @@ function drawCluster(slope){
     .attr("y2", yRange(-y))
     .attr("stroke", "steelblue")
     .attr("stroke-width", 3)
-    .attr("opacity", 0.6)
+    .attr("opacity", barShow ? 0 : 0.6)
 
-  vis.append("circle")
+  clut = vis.append("circle")
     .attr("class", "phase-dot")
     .attr("cx", xRange(x))
     .attr("cy", yRange(y))
     .attr("fill", "steelblue")
     .attr("r", 5)
     .attr("opacity", 0.3)
+
+  if(barShow) {
+    clut.attr("cx", function(){ sel = d3.select(this);
+                              orposx.push(sel.attr("cx"));
+                              orposy.push(sel.attr("cy"));
+                              trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
+                              return xbarRange(trans); })
+        .attr("cy", ybarRange(0))
+        .attr("fill", "orange")
+        .attr("opacity", 0.6)
+  }   
+
   vis.append("circle")
     .attr("class", "low-phase-dot")
     .attr("cx", xRange(-x))
     .attr("cy", yRange(-y))
     .attr("fill", "steelblue")
     .attr("r", 5)
-    .attr("opacity", 0.3)
+    .attr("opacity", barShow ? 0 : 0.3)
 }
 
 var orposx = [];
