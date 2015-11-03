@@ -54,6 +54,24 @@ vis.append('svg:g')
   .style("opacity", 0.6)
   .call(yAxis);
 
+var clearButton = d3.select('#animatedWrapper').insert("button", ":first-child")
+  .text("Clear")
+  .style("position", "absolute")
+  .style("top", '90%')
+  .style("left", '80%')
+  //.style("height", '10%')
+  //.style("width", '10%')
+  .on("click", clearPlot);
+
+var barButton = d3.select('#animatedWrapper').insert("button", ":first-child")
+  .text("Bar")
+  .style("position", "absolute")
+  .style("top", -40)
+  .style("left", '80%')
+  //.style("height", '10%')
+  //.style("width", '10%')
+  .on("click", barPlay);
+
 var hintButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Hint")
   .style("position", "absolute")
@@ -73,11 +91,14 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .on("click", handlePlay);
 
 var isPlaying = false;
+var barShow = false;
 
 function updateButtons()
 {
   var className = isPlaying ? "disabled" : "active";
   playButton.attr("class", className); 
+  var barBName = barShow ? "deBar" : "Bar";
+  barButton.text(barBName);
 }
 
 updateButtons();
@@ -95,12 +116,19 @@ function handlePlay()
   resetToInitialState();
   drawDots();
   drawLine();
-  //drawBars();
+  drawBars();
 }
 
 function hintPlay()
 {
   drawPerpen();
+}
+
+function barPlay()
+{
+  barShow = !barShow;
+  updateButtons();
+  moveCluster();
 }
 
 var points = [];
@@ -223,13 +251,14 @@ function drawBars(){
 
   vis.selectAll("rect")
         .data(slopes_data)
-      .enter().append("rect")
+      .enter().append("rect").attr("class", "bar")
       .attr("x", function(d){return xbarRange(d[0]);})
       .attr("y", function(d){return ybarRange(d[1]);})
       .attr("width", function(d){return xbarRange(1)-8;})
       .attr("height", function(d){return plotHeight/2-ybarRange(d[1]);})
       .attr("fill", "steelblue")
-      .attr("opacity", 0.6)
+      .attr("stroke", "white")
+      .attr("opacity", 0)
 }
 
 function drawCluster(slope){
@@ -256,17 +285,65 @@ function drawCluster(slope){
     .attr("opacity", 0.6)
 
   vis.append("circle")
+    .attr("class", "phase-dot")
     .attr("cx", xRange(x))
     .attr("cy", yRange(y))
     .attr("fill", "steelblue")
     .attr("r", 5)
     .attr("opacity", 0.3)
   vis.append("circle")
+    .attr("class", "low-phase-dot")
     .attr("cx", xRange(-x))
     .attr("cy", yRange(-y))
     .attr("fill", "steelblue")
     .attr("r", 5)
     .attr("opacity", 0.3)
+}
+
+var orposx = [];
+var orposy = [];
+
+function moveCluster(){
+  if (barShow){
+    vis.selectAll(".phase-line")
+      .transition()
+      .attr("opacity", 0)
+    vis.selectAll(".low-phase-dot")
+      .transition().duration(2000)
+      .attr("opacity", 0)
+    vis.selectAll(".phase-dot")
+      .transition().duration(2000)
+      .attr("fill", "orange")
+      .attr("opacity", 0.6)
+      .attr("cx", function(){ sel = d3.select(this);
+                              orposx.push(sel.attr("cx"));
+                              orposy.push(sel.attr("cy"));
+                              trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
+                              return xbarRange(trans); })
+      .attr("cy", ybarRange(0))
+    vis.selectAll(".bar")
+      .transition().duration(2000)
+      .attr("opacity", 0.6)}
+  else {
+    vis.selectAll(".bar")
+      .transition().duration(2000)
+      .attr("opacity", 0)
+    vis.selectAll(".phase-dot")
+      .transition().duration(2000)
+      .attr("fill", "steelblue")
+      .attr("opacity", 0.3)
+      .attr("cx", function(d, i){return orposx[i];})
+      .attr("cy", function(d, i){return orposy[i];})
+    vis.selectAll(".low-phase-dot")
+      .transition().duration(2000)
+      .attr("opacity", 0.3)
+    vis.selectAll(".phase-line")
+      .transition()
+      .delay(2000)
+      .attr("opacity", 0.6)
+    orposx = [];
+    orposy = [];
+  }
 }
 
 function resetToInitialState()
@@ -319,5 +396,20 @@ function leastSquares(xSeries, ySeries) {
     
     return [slope, intercept, rSquare];
   }
+
+function clearPlot(){
+  for (var i=0; i<sliceNum; i++){
+  slopes[i.toString()] = 0
+  }
+
+  orposx = [];
+  orposy = [];
+  vis.selectAll('circle').remove();
+  vis.selectAll('rect').remove();
+  vis.selectAll('line').remove();
+
+  barShow = false;
+  updateButtons();
+}
 
 }) ();
