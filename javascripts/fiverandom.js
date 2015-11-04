@@ -42,6 +42,11 @@ colorScale.domain[d3.range(0, 10, 1)];
 
 var vis = d3.select('#fiverandom');
 
+var drag = d3.behavior.drag()
+    .on("dragstart", dragstarted)
+    .on("drag", dragged)
+    .on("dragend", dragended);
+
 var xAx = vis.append('svg:g')
   .attr('class', 'x axis')
   .attr('transform', 'translate(0,' + (plotHeight / 2) + ')')
@@ -110,7 +115,7 @@ function handlePlay()
     return;
   }
 
-  isPlaying = true;
+  isPlaying = true; 
   pointsNum = $('#numPointsforR').val();
   updateButtons();
   resetToInitialState();
@@ -157,13 +162,14 @@ function drawDots()
     ySeries.push(yVal)
 
     var circle = 
-      vis.append("circle")
+      vis.append("circle").datum([xVal, yVal])
         .attr("cx", xRange(xVal))
         .attr("cy", yRange(yVal))
         .attr("r", pointRadius)
         .attr("stroke", "none")
         .attr("fill", colorScale(i))
-        .attr("opacity", 0.0);
+        .attr("opacity", 0.0)
+        .call(drag);
 
     circle
         .transition()
@@ -298,7 +304,10 @@ function drawCluster(slope){
                               orposy.push(sel.attr("cy"));
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               return xbarRange(trans); })
-        .attr("cy", ybarRange(0))
+        .attr("cy", function(){ var sel = d3.select(this); 
+                              trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
+                              idx = Math.floor(trans);
+                              return ybarRange(slopes[idx.toString()]*Math.random()); })
         .attr("fill", "orange")
         .attr("opacity", 0.6)
   } 
@@ -327,12 +336,15 @@ function moveCluster(){
       .transition().duration(2000)
       .attr("fill", "orange")
       .attr("opacity", 0.6)
-      .attr("cx", function(){ sel = d3.select(this);
+      .attr("cx", function(){ var sel = d3.select(this);
                               orposx.push(sel.attr("cx"));
                               orposy.push(sel.attr("cy"));
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               return xbarRange(trans); })
-      .attr("cy", ybarRange(0))
+      .attr("cy", function(){ var sel = d3.select(this); 
+                              trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
+                              idx = Math.floor(trans);
+                              return ybarRange(slopes[idx.toString()]*Math.random()); })
     vis.selectAll(".bar")
       .transition().duration(2000)
       .attr("opacity", 0.6)}
@@ -408,6 +420,34 @@ function leastSquares(xSeries, ySeries) {
     
     return [slope, intercept, rSquare];
   }
+
+function dragstarted() {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", true);
+}
+
+function dragged() {
+  d3.select(this).attr("cx", d3.event.x).attr("cy", d3.event.y);
+}
+
+function dragended() {
+  var x = d3.select(this).datum()[0];
+  var y = d3.select(this).datum()[1];
+  for(var i=0; i<xSeries.length; i++){
+    if (xSeries[i]==x && ySeries[i]==y) {
+      xSeries[i] = xRange.invert(+d3.select(this).attr("cx"))
+      ySeries[i] = yRange.invert(+d3.select(this).attr("cy"))
+      d3.select(this).datum[0] = xSeries[i]
+      d3.select(this).datum[1] = ySeries[i]
+      dots[i] = d3.select(this)
+    }
+  }
+  d3.select(this).classed("dragging", false);
+  vis.select(".trendline").remove()
+  vis.selectAll(".bar").remove()
+  drawLine();
+  drawBars();
+}
 
 function clearPlot(){
   for (var i=0; i<sliceNum; i++){
