@@ -191,12 +191,29 @@ function drawLine()
  var leastSquaresCoeff = leastSquares(xSeries, ySeries);
     
     // apply the reults of the least squares regression
-    var x1 = -1;
+    var x1 = -1.1;
     var y1 = leastSquaresCoeff[0]*(-1) + leastSquaresCoeff[1];
-    var x2 = 1;
+    var x2 = 1.1;
     var y2 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
+
+    if (y1>1.1){
+      x1 = (1.1 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y1 = leastSquaresCoeff[0]*x1 + leastSquaresCoeff[1];
+    }
+    else if(y1<-1.1){
+      x1 = (-1.1 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y1 = leastSquaresCoeff[0]*x1 + leastSquaresCoeff[1];
+    }
+    if (y2>1.1){
+      x2 = (1.1 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
+    }
+    else if(y2<-1.1){
+      x2 = (-1.1 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
+    }
+
     var trendData = [[x1,y1,x2,y2]];
-    
     var trendline = vis.selectAll(".trendline")
       .data(trendData);
       

@@ -217,8 +217,25 @@ function drawLine()
     var y1 = leastSquaresCoeff[0]*(-4) + leastSquaresCoeff[1];
     var x2 = 4;
     var y2 = leastSquaresCoeff[0]*4 + leastSquaresCoeff[1];
+
+    if (y1>4){
+      x1 = (4 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y1 = leastSquaresCoeff[0]*x1 + leastSquaresCoeff[1];
+    }
+    else if(y1<-4){
+      x1 = (-4 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y1 = leastSquaresCoeff[0]*x1 + leastSquaresCoeff[1];
+    }
+    if (y2>4){
+      x2 = (4 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
+    }
+    else if(y2<-4){
+      x2 = (-4 - leastSquaresCoeff[1])/leastSquaresCoeff[0];
+      y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
+    }
+
     var trendData = [[x1,y1,x2,y2]];
-    
     var trendline = vis.selectAll(".trendline")
       .data(trendData);
       
