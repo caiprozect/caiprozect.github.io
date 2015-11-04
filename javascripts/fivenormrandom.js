@@ -465,6 +465,7 @@ function dragended() {
   }
   d3.select(this).classed("dragging", false);
   vis.select(".trendline").remove()
+  trendlines = [];
   if(!barShow){vis.selectAll(".phase-line").remove()}
   vis.selectAll(".bar").remove()
   drawLine();
