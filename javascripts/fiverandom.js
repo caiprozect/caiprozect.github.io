@@ -148,7 +148,7 @@ for (var i=0; i<sliceNum; i++){
   slopes[i.toString()] = 0
 }
 
-var pointRadius = 10;
+var pointRadius = 15;
 var pointsNum = 5;
 
 function drawDots()
@@ -165,7 +165,7 @@ function drawDots()
       vis.append("circle").datum([xVal, yVal])
         .attr("cx", xRange(xVal))
         .attr("cy", yRange(yVal))
-        .attr("r", pointRadius)
+        .attr("r", function(){return pointRadius})
         .attr("stroke", "none")
         .attr("fill", colorScale(i))
         .attr("opacity", 0.0)
@@ -444,6 +444,7 @@ function dragended() {
   }
   d3.select(this).classed("dragging", false);
   vis.select(".trendline").remove()
+  if(!barShow){vis.selectAll(".phase-line").remove()}
   vis.selectAll(".bar").remove()
   drawLine();
   drawBars();
