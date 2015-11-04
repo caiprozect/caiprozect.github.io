@@ -247,7 +247,9 @@ function drawLine()
       .attr("x2", function(d) { return xRange(d[2]); })
       .attr("y2", function(d) { return yRange(d[3]); })
       .attr("stroke", "teal")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", 2)
+      .on("mouseenter", handleMouseover)
+      .on("mouseout", handleMouseout);;
  
     trendlines.push(trendline)
 
@@ -487,6 +489,24 @@ function dragended() {
   vis.selectAll(".bar").remove()
   drawLine();
   drawBars();
+}
+
+function handleMouseover(d, i){
+  d3.select(this).attr("stroke-width", 30).attr("opacity", 0.6);
+  vis.append("text").attr("id", "question").attr("text-anchor", "middle")
+    .attr({
+      transform: function(){return "translate("+xRange((d[0]+d[2])/2)+","+yRange((d[1]+d[3])/2)+")rotate("+(-1)*Math.atan((d[3]-d[1])/(d[2]-d[0]))*180/Math.PI+")"},
+      dy: 10
+    })
+    .attr("font-size", 25)
+    .attr("fill", "white")
+    .attr("stroke", "black")
+    .text("Huh? What's this line?").style("font-weight", "bold")
+}
+
+function handleMouseout(d, i){
+  d3.select(this).attr("stroke-width", 2).attr("opacity", 1);
+  d3.select("#question").remove();
 }
 
 function clearPlot(){
