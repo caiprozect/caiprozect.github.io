@@ -458,8 +458,8 @@ function dragended() {
     if (xSeries[i]==x && ySeries[i]==y) {
       xSeries[i] = xRange.invert(+d3.select(this).attr("cx"))
       ySeries[i] = yRange.invert(+d3.select(this).attr("cy"))
-      d3.select(this).datum[0] = xSeries[i]
-      d3.select(this).datum[1] = ySeries[i]
+      d3.select(this).datum()[0] = xSeries[i]
+      d3.select(this).datum()[1] = ySeries[i]
       dots[i] = d3.select(this)
     }
   }
