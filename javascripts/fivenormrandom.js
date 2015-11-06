@@ -274,11 +274,11 @@ function drawPerpen(){
   var leastSquaresCoeff = leastSquares(xSeries, ySeries);
 
   for (var i=0; i < pointsNum; i++){
-    x2 = (xSeries[i]/leastSquaresCoeff[0]+ySeries[i]-leastSquaresCoeff[1])/(leastSquaresCoeff[0]+1/leastSquaresCoeff[0]);
-    y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
-
     x1 = dots[i].attr("cx")
     y1 = dots[i].attr("cy")
+
+    x2 = xSeries[i];
+    y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];
 
     dots[i].transition()
         .duration(1500)
