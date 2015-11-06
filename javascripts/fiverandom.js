@@ -544,16 +544,19 @@ function leastSquares(xSeries, ySeries) {
   }
 
 function dragstarted() {
+  if (!isTrying){
   d3.event.sourceEvent.stopPropagation();
   d3.select(this).classed("dragging", true);
-  vis.selectAll(".beats").remove()
+  vis.selectAll(".beats").remove()}
 }
 
 function dragged() {
-  d3.select(this).attr("cx", d3.event.x).attr("cy", d3.event.y);
+  if (!isTrying){
+  d3.select(this).attr("cx", d3.event.x).attr("cy", d3.event.y);}
 }
 
 function dragended() {
+  if (!isTrying){
   var x = d3.select(this).datum()[0];
   var y = d3.select(this).datum()[1];
   for(var i=0; i<xSeries.length; i++){
@@ -571,7 +574,7 @@ function dragended() {
   if(!barShow){vis.selectAll(".phase-line").remove()}
   vis.selectAll(".bar").remove()
   drawLine();
-  drawBars();
+  drawBars();}
 }
 
 function handleMouseover(d, i){
