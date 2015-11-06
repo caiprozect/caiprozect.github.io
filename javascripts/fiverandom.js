@@ -59,6 +59,15 @@ vis.append('svg:g')
   .style("opacity", 0.6)
   .call(yAxis);
 
+var beatButton = d3.select('#animatedWrapper').insert("button", ":first-child")
+  .text("Beat Me")
+  .style("position", "absolute")
+  .style("top", -40)
+  .style("left", '5%')
+  //.style("height", '10%')
+  //.style("width", '10%')
+  .on("click", handleBeat);
+
 var clearButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Clear")
   .style("position", "absolute")
@@ -66,7 +75,7 @@ var clearButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .style("left", '80%')
   //.style("height", '10%')
   //.style("width", '10%')
-  .on("click", clearPlot);
+  .on("click", handleClear);
 
 var barButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .text("Bar")
@@ -96,9 +105,13 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .on("click", handlePlay);
 
 var isPlaying = false;
+var played = false;
 var isBaring = false;
 var barShow = false;
 var isHinting = false;
+var isBeating = false;
+var isTrying = false;
+var clearLock = false;
 
 function updateButtons()
 {
@@ -110,6 +123,12 @@ function updateButtons()
   barButton.text(barBName);
   var hintActive = isHinting ? "disabled" : "active";
   hintButton.attr("class", hintActive);
+  var beatActive = isBeating ? "disabled" : "active";
+  beatButton.attr("class", beatActive);
+  var beatBName = isTrying ? "Give Up" : "Beat Me";
+  beatButton.text(beatBName);
+  var clearActive = clearLock ? "disabled" : "active";
+  clearButton.attr("class", clearActive);
 }
 
 updateButtons();
@@ -121,6 +140,7 @@ function handlePlay()
     return;
   }
 
+  played = true;
   isPlaying = true; 
   pointsNum = $('#numPointsforR').val();
   updateButtons();
@@ -136,9 +156,11 @@ function hintPlay()
     return;
   }
 
-  isHinting = true;
-  updateButtons();
-  drawPerpen();
+  if (played) {
+    isHinting = true;
+    updateButtons();
+    drawPerpen();
+  }
 }
 
 function barPlay()
@@ -147,10 +169,37 @@ function barPlay()
   {
     return;
   }
-  isBaring = true;
-  barShow = !barShow;
-  updateButtons();
-  moveCluster();
+
+  else if (played) {
+    isBaring = true;
+    barShow = !barShow;
+    updateButtons();
+    moveCluster();
+  }
+}
+
+function handleBeat(){
+  if (isBeating)
+  {
+    return;
+  }
+
+  else if (played) {
+    isBeating = true;
+    isTrying = !isTrying;
+    isPlaying = true;
+    isHinting = true;
+    isBaring = true;
+    clearLock = true;
+    updateButtons();
+    drawBeat();
+    }
+}
+
+function handleClear(){
+  if (!clearLock) {
+    clearPlot();
+  }
 }
 
 var points = [];
@@ -280,6 +329,42 @@ function drawPerpen(){
     
     perpens.push(perpen);
     */
+  }
+}
+
+function drawBeat(){
+  if (isTrying) {
+    var leastSquaresCoeff = leastSquares(xSeries, ySeries);
+
+    for (var i=0; i < pointsNum; i++){
+        x1 = dots[i].attr("cx")
+        y1 = dots[i].attr("cy")
+
+        x2 = xSeries[i];
+        y2 = leastSquaresCoeff[0]*x2 + leastSquaresCoeff[1];    
+      
+        var perpen = vis.append("line").attr("class", "beats")
+                      .attr("x1", x1)
+                      .attr("y1", y1)
+                      .attr("x2", xRange(x2))
+                      .attr("y2", yRange(y2))
+                      .attr("stroke", "red")
+                      .attr("stroke-width", 3)
+                      .attr("opacity", 0);
+    }
+      vis.selectAll(".beats").transition()
+        .duration(2000)
+        .attr("opacity", 0.9)
+        .each("end", function(){isBeating=false; updateButtons();})
+  }
+  else {
+    vis.selectAll(".beats").remove();
+    isPlaying = false;
+    isHinting = false;
+    isBaring = false;
+    clearLock = false;
+    isBeating = false;
+    updateButtons();
   }
 }
 
@@ -429,6 +514,7 @@ function resetToInitialState()
   ySeries = [];
   vis.selectAll("rect").remove();
   vis.selectAll(".phase-line").remove();
+  vis.selectAll(".beats").remove();
 }
 
 function leastSquares(xSeries, ySeries) {
@@ -460,6 +546,7 @@ function leastSquares(xSeries, ySeries) {
 function dragstarted() {
   d3.event.sourceEvent.stopPropagation();
   d3.select(this).classed("dragging", true);
+  vis.selectAll(".beats").remove()
 }
 
 function dragged() {
@@ -517,6 +604,7 @@ function clearPlot(){
   vis.selectAll('line').remove();
 
   barShow = false;
+  played = false;
   updateButtons();
 }
 
