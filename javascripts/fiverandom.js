@@ -96,14 +96,20 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   .on("click", handlePlay);
 
 var isPlaying = false;
+var isBaring = false;
 var barShow = false;
+var isHinting = false;
 
 function updateButtons()
 {
   var className = isPlaying ? "disabled" : "active";
-  playButton.attr("class", className); 
+  playButton.attr("class", className);
+  var barActive = isBaring ? "disabled" : "active";
+  barButton.attr("class", barActive);
   var barBName = barShow ? "Scatter" : "Bar";
   barButton.text(barBName);
+  var hintActive = isHinting ? "disabled" : "active";
+  hintButton.attr("class", hintActive);
 }
 
 updateButtons();
@@ -126,11 +132,22 @@ function handlePlay()
 
 function hintPlay()
 {
+  if (isHinting) {
+    return;
+  }
+
+  isHinting = true;
+  updateButtons();
   drawPerpen();
 }
 
 function barPlay()
 {
+  if (isBaring)
+  {
+    return;
+  }
+  isBaring = true;
   barShow = !barShow;
   updateButtons();
   moveCluster();
@@ -176,14 +193,11 @@ function drawDots()
           .duration(200)
           .delay(i * 50)
           .attr("opacity", 1.0)
+          .each("end", function(){isPlaying=false; updateButtons();})
           //.attr("r", pointRadius)
 
     dots.push(circle);
   }
-
-  isPlaying = false;
-  updateButtons();
-  return true;
 }
 
 function drawLine()
@@ -253,6 +267,7 @@ function drawPerpen(){
         .duration(1500)
         .attr("cx", x1)
         .attr("cy", y1)
+        .each("end", function(){isHinting=false; updateButtons();})
 
     /*  
     var perpen = vis.append("line")
@@ -364,6 +379,7 @@ function moveCluster(){
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               idx = Math.floor(trans);
                               return ybarRange(slopes[idx.toString()]*Math.random()); })
+      .each("end", function(){isBaring=false; updateButtons();})
     vis.selectAll(".bar")
       .transition().duration(2000)
       .attr("opacity", 0.6)}
@@ -377,6 +393,7 @@ function moveCluster(){
       .attr("opacity", 0.3)
       .attr("cx", function(d, i){return orposx[i];})
       .attr("cy", function(d, i){return orposy[i];})
+      .each("end", function(){isBaring=false; updateButtons();})
     vis.selectAll(".low-phase-dot")
       .transition().duration(2000)
       .attr("opacity", 0.3)
