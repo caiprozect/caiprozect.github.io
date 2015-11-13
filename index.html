@@ -24,6 +24,17 @@
               stroke-width: 15;
               opacity: 0.6;
               }
+      canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+      }
+      canvas #layer1{
+        z-index: 1;
+      }
+      canvas #layer2{
+        z-index: 2;
+      }
       @media (max-width: 700px) {
         button{
           width: 25%;
@@ -52,6 +63,20 @@
 
       </header>
       <section>
+
+        <h3>Complex Plane Phasor on Canvas</h3>
+        <table>
+        <tbody>
+          <tr>
+            <td>
+              <div id="phasorCanvasWrapper" style="position: relative">
+                <svg id="phasorCanvasSpace" class="caiCanvas" width="750" height="750" style="padding-top: 20px"></svg>
+                <script src="javascripts/square_wave_phasor_canvas.js"></script>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        </table>
 
         <h3>Complex Plane Phasor</h3>
         <table>

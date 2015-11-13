@@ -82,9 +82,6 @@ for (var i = 0; i < 5; i++)
 
 var time = radianRange[0];
 
-var xRangePlot = d3.scale.linear().range([xRange(2.5), xRange(2.5)+700]);
-xRangePlot.domain([0, 4 * Math.PI]);
-
 amplitudes[0] = 1.0;
 amplitudes[1] = 0.0;
 amplitudes[2] = 0.5;
@@ -138,15 +135,12 @@ function draw() {
         .attr('opacity', 0.25)
         .attr('cx', vectors[4].attr('x2'))
         .attr('cy', vectors[4].attr('y2'))
-        .transition().duration(1000)
+        .transition().duration(500)
         .attr('cx', function(){return xRadianRange(time);})
-        .transition().duration(2000)
+        .transition().duration(5000)
         .remove();
     }
   }
-
-  var leftX = xComponent;//Math.min(xComponent3, xRange(0));
-
 
   time += 0.0125;
   if (time > radianRange[1])
