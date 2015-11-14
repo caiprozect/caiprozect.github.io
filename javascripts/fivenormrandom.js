@@ -1,3 +1,6 @@
+var isPlaying_NR = false;
+var isBaring_NR = false;
+var isHinting_NR = false;
 var barShow = false;
 var orposx = [];
 var orposy = [];
@@ -121,19 +124,15 @@ var playButton = d3.select('#animatedWrapper2').insert("button", ":first-child")
   //.style("width", '10%')
   .on("click", handlePlay);
 
-var isPlaying = false;
-var isBaring = false;
-var isHinting = false;
-
 function updateButtons()
 {
-  var className = isPlaying ? "disabled" : "active";
+  var className = isPlaying_NR ? "disabled" : "active";
   playButton.attr("class", className);
-  var barActive = isBaring ? "disabled" : "active";
+  var barActive = isBaring_NR ? "disabled" : "active";
   barButton.attr("class", barActive);
   var barBName = barShow ? "Scatter" : "Bar";
   barButton.text(barBName);
-  var hintActive = isHinting ? "disabled" : "active";
+  var hintActive = isHinting_NR ? "disabled" : "active";
   hintButton.attr("class", hintActive);
 }
 
@@ -141,12 +140,12 @@ updateButtons();
 
 function handlePlay()
 {
-  if (isPlaying)
+  if (isPlaying_NR)
   {
     return;
   }
 
-  isPlaying = true;
+  isPlaying_NR = true;
   pointsNum = $('#numPointsforNR').val();
   updateButtons();
   resetToInitialState();
@@ -157,22 +156,22 @@ function handlePlay()
 
 function hintPlay()
 {
-  if (isHinting) {
+  if (isHinting_NR) {
     return;
   }
 
-  isHinting = true;
+  isHinting_NR = true;
   updateButtons();
   drawPerpen();
 }
 
 function barPlay()
 {
- if (isBaring)
+ if (isBaring_NR)
   {
     return;
   }
-  isBaring = true;
+  isBaring_NR = true;
   barShow = !barShow;
   updateButtons();
   moveCluster();
@@ -237,7 +236,7 @@ function drawDots()
           .duration(200)
           .delay(i * 50)
           .attr("opacity", 1.0)
-          .each("end", function(){isPlaying=false; updateButtons();})
+          .each("end", function(){isPlaying_NR=false; updateButtons();})
           //.attr("r", pointRadius)
 
     dots.push(circle);
@@ -312,7 +311,7 @@ function drawPerpen(){
         .duration(1500)
         .attr("cx", x1)
         .attr("cy", y1)
-        .each("end", function(){isHinting=false; updateButtons();})
+        .each("end", function(){isHinting_NR=false; updateButtons();})
     /*    
     var perpen = vis.append("line")
                   .attr("x1", xRange(xSeries[i]))
@@ -420,7 +419,7 @@ function moveCluster(){
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               idx = Math.floor(trans);
                               return ybarRange(slopes[idx.toString()]*Math.random()); })
-      .each("end", function(){isBaring=false; updateButtons();})
+      .each("end", function(){isBaring_NR=false; updateButtons();})
     vis.selectAll(".bar")
       .transition().duration(2000)
       .attr("opacity", 0.6)}
@@ -434,7 +433,7 @@ function moveCluster(){
       .attr("opacity", 0.3)
       .attr("cx", function(d, i){return orposx[i];})
       .attr("cy", function(d, i){return orposy[i];})
-      .each("end", function(){isBaring=false; updateButtons();})
+      .each("end", function(){isBaring_NR=false; updateButtons();})
     vis.selectAll(".low-phase-dot")
       .transition().duration(2000)
       .attr("opacity", 0.3)
@@ -569,6 +568,7 @@ if (residue_NR.length > 0) {
       rsd_dot.datum(residue_NR[0].datum()).call(drag);
       xSeries.push(rsd_dot.datum()[0]);
       ySeries.push(rsd_dot.datum()[1]);
+      dots.push(rsd_dot);
     }
     residue_NR[0][0].shift();
   }
@@ -599,6 +599,7 @@ var clicked_fiveNR = false
 var residue_NR = [];
 
 d3.select("#five_normal_random").on("click", function(){
+  if (isPlaying_NR || isBaring_NR || isHinting_NR) { return; }
   clicked_fiveNR = !clicked_fiveNR
   if (clicked_fiveNR) {
     fiveNR();

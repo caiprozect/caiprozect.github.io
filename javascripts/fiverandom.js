@@ -1,8 +1,13 @@
-var isTrying = false;
-var played = false;
-var barShow = false;
-var orposx = [];
-var orposy = [];
+var isTrying_R = false;
+var isPlaying_R = false;
+var isBaring_R = false;
+var isHinting_R = false;
+var isBeating_R = false;
+var clearLock_R = false;
+var played_R = false;
+var barShow_R = false;
+var orposx_R = [];
+var orposy_R = [];
 var slopes_R = {};
 
 for (var i=0; i<16; i++){
@@ -132,27 +137,21 @@ var playButton = d3.select('#animatedWrapper').insert("button", ":first-child")
   //.style("width", '10%')
   .on("click", handlePlay);
 
-var isPlaying = false;
-var isBaring = false;
-var isHinting = false;
-var isBeating = false;
-var clearLock = false;
-
 function updateButtons()
 {
-  var className = isPlaying ? "disabled" : "active";
+  var className = isPlaying_R ? "disabled" : "active";
   playButton.attr("class", className);
-  var barActive = isBaring ? "disabled" : "active";
+  var barActive = isBaring_R ? "disabled" : "active";
   barButton.attr("class", barActive);
-  var barBName = barShow ? "Scatter" : "Bar";
+  var barBName = barShow_R ? "Scatter" : "Bar";
   barButton.text(barBName);
-  var hintActive = isHinting ? "disabled" : "active";
+  var hintActive = isHinting_R ? "disabled" : "active";
   hintButton.attr("class", hintActive);
-  var beatActive = isBeating ? "disabled" : "active";
+  var beatActive = isBeating_R ? "disabled" : "active";
   beatButton.attr("class", beatActive);
-  var beatBName = isTrying ? "Give Up" : "Beat Me";
+  var beatBName = isTrying_R ? "Give Up" : "Beat Me";
   beatButton.text(beatBName);
-  var clearActive = clearLock ? "disabled" : "active";
+  var clearActive = clearLock_R ? "disabled" : "active";
   clearButton.attr("class", clearActive);
 }
 
@@ -160,13 +159,13 @@ updateButtons();
 
 function handlePlay()
 {
-  if (isPlaying)
+  if (isPlaying_R)
   {
     return;
   }
 
-  played = true;
-  isPlaying = true; 
+  played_R = true;
+  isPlaying_R = true; 
   pointsNum = $('#numPointsforR').val();
   updateButtons();
   resetToInitialState();
@@ -177,12 +176,12 @@ function handlePlay()
 
 function hintPlay()
 {
-  if (isHinting) {
+  if (isHinting_R) {
     return;
   }
 
-  if (played) {
-    isHinting = true;
+  if (played_R) {
+    isHinting_R = true;
     updateButtons();
     drawPerpen();
   }
@@ -190,39 +189,39 @@ function hintPlay()
 
 function barPlay()
 {
-  if (isBaring)
+  if (isBaring_R)
   {
     return;
   }
 
-  else if (played) {
-    isBaring = true;
-    barShow = !barShow;
+  else if (played_R) {
+    isBaring_R = true;
+    barShow_R = !barShow_R;
     updateButtons();
     moveCluster();
   }
 }
 
 function handleBeat(){
-  if (isBeating)
+  if (isBeating_R)
   {
     return;
   }
 
-  else if (played) {
-    isBeating = true;
-    isTrying = !isTrying;
-    isPlaying = true;
-    isHinting = true;
-    isBaring = true;
-    clearLock = true;
+  else if (played_R) {
+    isBeating_R = true;
+    isTrying_R = !isTrying_R;
+    isPlaying_R = true;
+    isHinting_R = true;
+    isBaring_R = true;
+    clearLock_R = true;
     updateButtons();
     drawBeat();
     }
 }
 
 function handleClear(){
-  if (!clearLock) {
+  if (!clearLock_R) {
     clearPlot();
   }
 }
@@ -264,7 +263,7 @@ function drawDots()
           .duration(200)
           .delay(i * 50)
           .attr("opacity", 1.0)
-          .each("end", function(){isPlaying=false; updateButtons();})
+          .each("end", function(){isPlaying_R=false; updateButtons();})
           //.attr("r", pointRadius)
 
     dots.push(circle);
@@ -338,7 +337,7 @@ function drawPerpen(){
         .duration(1500)
         .attr("cx", x1)
         .attr("cy", y1)
-        .each("end", function(){isHinting=false; updateButtons();})
+        .each("end", function(){isHinting_R=false; updateButtons();})
 
     /*  
     var perpen = vis.append("line")
@@ -355,7 +354,7 @@ function drawPerpen(){
 }
 
 function drawBeat(){
-  if (isTrying) {
+  if (isTrying_R) {
     var leastSquaresCoeff = leastSquares(xSeries, ySeries);
 
     for (var i=0; i < pointsNum; i++){
@@ -377,15 +376,15 @@ function drawBeat(){
       vis.selectAll(".beats").transition()
         .duration(2000)
         .attr("opacity", 0.9)
-        .each("end", function(){isBeating=false; updateButtons();})
+        .each("end", function(){isBeating_R=false; updateButtons();})
   }
   else {
     vis.selectAll(".beats").remove();
-    isPlaying = false;
-    isHinting = false;
-    isBaring = false;
-    clearLock = false;
-    isBeating = false;
+    isPlaying_R = false;
+    isHinting_R = false;
+    isBaring_R = false;
+    clearLock_R = false;
+    isBeating_R = false;
     updateButtons();
   }
 }
@@ -405,7 +404,7 @@ function drawBars(){
       .attr("height", function(d){return plotHeight/2-ybarRange(d[1]);})
       .attr("fill", "steelblue")
       .attr("stroke", "white")
-      .attr("opacity", barShow ? 0.6 : 0)
+      .attr("opacity", barShow_R ? 0.6 : 0)
 }
 
 function drawCluster(slope){
@@ -420,7 +419,7 @@ function drawCluster(slope){
     .attr("y2", yRange(y))
     .attr("stroke", "steelblue")
     .attr("stroke-width", 3)
-    .attr("opacity", barShow ? 0 : 0.6)
+    .attr("opacity", barShow_R ? 0 : 0.6)
   vis.append("line")
     .attr("class", "phase-line")
     .attr("x1", xRange(0))
@@ -429,7 +428,7 @@ function drawCluster(slope){
     .attr("y2", yRange(-y))
     .attr("stroke", "steelblue")
     .attr("stroke-width", 3)
-    .attr("opacity", barShow ? 0 : 0.6)
+    .attr("opacity", barShow_R ? 0 : 0.6)
 
   clut = vis.append("circle")
     .attr("class", "phase-dot")
@@ -439,10 +438,10 @@ function drawCluster(slope){
     .attr("r", 5)
     .attr("opacity", 0.3)
 
-  if(barShow) {
+  if(barShow_R) {
     clut.attr("cx", function(){ sel = d3.select(this);
-                              orposx.push(sel.attr("cx"));
-                              orposy.push(sel.attr("cy"));
+                              orposx_R.push(sel.attr("cx"));
+                              orposy_R.push(sel.attr("cy"));
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               return xbarRange(trans); })
         .attr("cy", function(){ var sel = d3.select(this); 
@@ -459,11 +458,11 @@ function drawCluster(slope){
     .attr("cy", yRange(-y))
     .attr("fill", "steelblue")
     .attr("r", 5)
-    .attr("opacity", barShow ? 0 : 0.3)
+    .attr("opacity", barShow_R ? 0 : 0.3)
 }
 
 function moveCluster(){
-  if (barShow){
+  if (barShow_R){
     vis.selectAll(".phase-line")
       .transition()
       .attr("opacity", 0)
@@ -475,15 +474,15 @@ function moveCluster(){
       .attr("fill", "orange")
       .attr("opacity", 0.6)
       .attr("cx", function(){ var sel = d3.select(this);
-                              orposx.push(sel.attr("cx"));
-                              orposy.push(sel.attr("cy"));
+                              orposx_R.push(sel.attr("cx"));
+                              orposy_R.push(sel.attr("cy"));
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               return xbarRange(trans); })
       .attr("cy", function(){ var sel = d3.select(this); 
                               trans = (Math.atan((plotHeight/2-sel.attr("cy"))/(sel.attr("cx")-plotWidth/2))+Math.PI/2)*16/Math.PI;
                               idx = Math.floor(trans);
                               return ybarRange(slopes[idx.toString()]*Math.random()); })
-      .each("end", function(){isBaring=false; updateButtons();})
+      .each("end", function(){isBaring_R=false; updateButtons();})
     vis.selectAll(".bar")
       .transition().duration(2000)
       .attr("opacity", 0.6)}
@@ -495,9 +494,9 @@ function moveCluster(){
       .transition().duration(2000)
       .attr("fill", "steelblue")
       .attr("opacity", 0.3)
-      .attr("cx", function(d, i){return orposx[i];})
-      .attr("cy", function(d, i){return orposy[i];})
-      .each("end", function(){isBaring=false; updateButtons();})
+      .attr("cx", function(d, i){return orposx_R[i];})
+      .attr("cy", function(d, i){return orposy_R[i];})
+      .each("end", function(){isBaring_R=false; updateButtons();})
     vis.selectAll(".low-phase-dot")
       .transition().duration(2000)
       .attr("opacity", 0.3)
@@ -505,8 +504,8 @@ function moveCluster(){
       .transition()
       .delay(2000)
       .attr("opacity", 0.6)
-    orposx = [];
-    orposy = [];
+    orposx_R = [];
+    orposy_R = [];
   }
 }
 
@@ -558,19 +557,19 @@ function leastSquares(xSeries, ySeries) {
   }
 
 function dragstarted() {
-  if (!isTrying){
+  if (!isTrying_R){
   d3.event.sourceEvent.stopPropagation();
   d3.select(this).classed("dragging", true);
   vis.selectAll(".beats").remove()}
 }
 
 function dragged() {
-  if (!isTrying){
+  if (!isTrying_R){
   d3.select(this).attr("cx", d3.event.x).attr("cy", d3.event.y);}
 }
 
 function dragended() {
-  if (!isTrying){
+  if (!isTrying_R){
   var x = d3.select(this).datum()[0];
   var y = d3.select(this).datum()[1];
   for(var i=0; i<xSeries.length; i++){
@@ -585,7 +584,7 @@ function dragended() {
   d3.select(this).classed("dragging", false);
   vis.select(".trendline").remove()
   trendlines = [];
-  if(!barShow){vis.selectAll(".phase-line").remove()}
+  if(!barShow_R){vis.selectAll(".phase-line").remove()}
   vis.selectAll(".bar").remove()
   drawLine();
   drawBars();}
@@ -614,14 +613,14 @@ clearPlot = function(){
   slopes[i.toString()] = 0
   }
 
-  orposx = [];
-  orposy = [];
+  orposx_R = [];
+  orposy_R = [];
   vis.selectAll('circle').remove();
   vis.selectAll('rect').remove();
   vis.selectAll('line').remove();
 
-  barShow = false;
-  played = false;
+  barShow_R = false;
+  played_R = false;
   updateButtons();
 }
 
@@ -638,6 +637,7 @@ if (residue_R.length > 0) {
       rsd_dot.datum(residue_R[0].datum()).call(drag);
       xSeries.push(rsd_dot.datum()[0]);
       ySeries.push(rsd_dot.datum()[1]);
+      dots.push(rsd_dot);
     }
     residue_R[0][0].shift();
   }
@@ -668,16 +668,15 @@ var clicked_fiveR = false
 var residue_R = [];
 
 d3.select("#five_random").on("click", function(){
-  if (!isTrying) {
-    clicked_fiveR = !clicked_fiveR
-    if (clicked_fiveR) {
-      fiveR();
-    }
-    else {
-      residue_R.push(d3.select("#fiverandom").selectAll("circle")); 
-      residue_R.push(d3.select("#fiverandom").selectAll("line"));
-      d3.select("#animatedWrapper").remove();
-      d3.select("#controlPanel_fR").remove();
-    }
+  if (isTrying_R || isPlaying_R || isBaring_R || isHinting_R || isBeating_R) { return; }
+  clicked_fiveR = !clicked_fiveR
+  if (clicked_fiveR) {
+    fiveR();
+  }
+  else {
+    residue_R.push(d3.select("#fiverandom").selectAll("circle")); 
+    residue_R.push(d3.select("#fiverandom").selectAll("line"));
+    d3.select("#animatedWrapper").remove();
+    d3.select("#controlPanel_fR").remove();
   }
 });
