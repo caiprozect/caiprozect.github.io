@@ -93,16 +93,14 @@
         </tbody>
         </table>
         
-        <h3>Five Random Points</h3>
+        <div id="five_random">
+          <h3>Five Random Points</h3>
+        </div>
         <table>
         <tbody>
           <tr>
             <td>
-              <div id="animatedWrapper" style="position: relative">
-                <svg id="fiverandom" class="caiCanvas" width="750" height="750" style="padding-top: 20px"></svg>
-              </div>
-              <div id="controlPanel">
-                <input type='range' id='numPointsforR' class='controler' min=1 max=10 value=5 step=1 style='width: 80%'> 
+              <div id="five_random_canvas">
                 <script src="javascripts/fiverandom.js"></script>
               </div>
             </td>
@@ -110,16 +108,14 @@
         </tbody>
         </table>
 
-        <h3>Five Normal Distribution Random Points</h3>
+        <div id="five_normal_random">
+          <h3>Five Normal Distribution Random Points</h3>
+        </div>
         <table>
         <tbody>
           <tr>
-            <td>
-              <div id="animatedWrapper2" style="position: relative">
-                <svg id="fivenormrandom" class="caiCanvas" width="750" height="750" style="padding-top: 20px"></svg>
-              </div>
-              <div id="controlPanel">
-                <input type='range' id='numPointsforNR' class='controler' min=1 max=10 value=5 step=1 style='width: 80%'> 
+            <td id="five_normal_random_td">
+              <div id="five_normal_random_canvas">
                 <script src="javascripts/fivenormrandom.js"></script>
               </div>
             </td>

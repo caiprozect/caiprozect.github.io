@@ -1,4 +1,13 @@
-var fiveNR = (function() {
+var barShow = false;
+var orposx = [];
+var orposy = [];
+var slopes_NR = {};
+
+for (var i=0; i<16; i++){
+  slopes_NR[i.toString()] = 0
+}
+
+var fiveNR = function() {
 var devSize = Math.min($(window).width(), $(window).height());
 var canvasWidth =  devSize < 700 ? devSize*0.8 : 700;
 var canvasHeight = devSize < 700 ? devSize*0.8 : 700;
@@ -40,7 +49,24 @@ var yAxis = d3.svg.axis()
 var colorScale = d3.scale.category10();
 colorScale.domain[d3.range(0, 10, 1)];
 
-var vis = d3.select('#fivenormrandom');
+d3.select("#five_normal_random_canvas").append("div").attr("id", "animatedWrapper2").style("position", "relative");
+d3.select("#five_normal_random_canvas").append("div").attr("id", "controlPanel_fNR");
+
+d3.select("#controlPanel_fNR").append("input")
+  .attr("type", "range")
+  .attr("id", "numPointsforNR")
+  .attr("class", "contorler")
+  .attr("min", 1)
+  .attr("max", 10)
+  .attr("value", 5)
+  .attr("step", 1)
+  .style("width", "80%");
+
+var vis = d3.select("#animatedWrapper2").append("svg").attr("id", "fivenormrandom")
+  .attr("class", "caiCanvas")
+  .attr("width", "750")
+  .attr("height", "750")
+  .style("padding-top", "20px");
 
 var drag = d3.behavior.drag()
     .on("dragstart", dragstarted)
@@ -97,7 +123,6 @@ var playButton = d3.select('#animatedWrapper2').insert("button", ":first-child")
 
 var isPlaying = false;
 var isBaring = false;
-var barShow = false;
 var isHinting = false;
 
 function updateButtons()
@@ -159,11 +184,7 @@ var ySeries = [];
 var dots = [];
 var trendlines = [];
 var perpens = [];
-var slopes = {};
-
-for (var i=0; i<sliceNum; i++){
-  slopes[i.toString()] = 0
-}
+var slopes = slopes_NR;
 
 var pointRadius = 15;
 var pointsNum = 5;
@@ -202,6 +223,7 @@ function drawDots()
 
     var circle = 
       vis.append("circle").datum([xVal, yVal])
+        .attr("class", "stone")
         .attr("cx", xRange(xVal))
         .attr("cy", yRange(yVal))
         .attr("r", function(){return pointRadius})
@@ -263,11 +285,12 @@ function drawLine()
       .attr("stroke", "teal")
       .attr("stroke-width", 2)
       .on("mouseenter", handleMouseover)
-      .on("mouseout", handleMouseout);;
+      .on("mouseout", handleMouseout);
  
     trendlines.push(trendline)
 
     drawCluster(leastSquaresCoeff[0]);
+
 }
 
 function drawPerpen(){
@@ -376,9 +399,6 @@ function drawCluster(slope){
     .attr("opacity", barShow ? 0 : 0.3)
 }
 
-var orposx = [];
-var orposy = [];
-
 function moveCluster(){
   if (barShow){
     vis.selectAll(".phase-line")
@@ -429,14 +449,9 @@ function moveCluster(){
 
 function resetToInitialState()
 {
-  for (var i = 0; i < dots.length; i++)
-  {
-    dots[i].remove();
-  }
+  vis.selectAll(".stone").remove();
 
-  if (trendlines.length > 0){
-    trendlines[0].remove()
-  }
+  vis.selectAll(".trendline").remove();
 
   for (var i=0; i < perpens.length; i++)
   {
@@ -528,7 +543,7 @@ function handleMouseout(d, i){
 
 function clearPlot(){
   for (var i=0; i<sliceNum; i++){
-  slopes[i.toString()] = 0
+  slopes_NR[i.toString()] = 0
   }
 
   orposx = [];
@@ -541,4 +556,57 @@ function clearPlot(){
   updateButtons();
 }
 
-}) ();
+if (residue_NR.length > 0) {
+  while (residue_NR[0][0].length > 0) {
+    var rsd_dot = vis.append("circle")
+        .attr("class", residue_NR[0].attr("class"))
+        .attr("cx", residue_NR[0].attr("cx"))
+        .attr("cy", residue_NR[0].attr("cy"))
+        .attr("r", residue_NR[0].attr("r"))
+        .attr("fill", residue_NR[0].attr("fill"))
+        .attr("opacity", residue_NR[0].attr("opacity"))
+    if (rsd_dot.attr("class") == "stone") {
+      rsd_dot.datum(residue_NR[0].datum()).call(drag);
+      xSeries.push(rsd_dot.datum()[0]);
+      ySeries.push(rsd_dot.datum()[1]);
+    }
+    residue_NR[0][0].shift();
+  }
+  while (residue_NR[1][0].length > 0) {
+    var rsd_line = vis.append("line")
+      .attr("class", residue_NR[1].attr("class"))
+      .attr("x1", residue_NR[1].attr("x1"))
+      .attr("y1", residue_NR[1].attr("y1"))
+      .attr("x2", residue_NR[1].attr("x2"))
+      .attr("y2", residue_NR[1].attr("y2"))
+      .attr("stroke", residue_NR[1].attr("stroke"))
+      .attr("stroke-width", residue_NR[1].attr("stroke-width"))
+      .attr("opacity", residue_NR[1].attr("opacity"))
+    if (rsd_line.attr("class") == "trendline") {
+    rsd_line.datum(residue_NR[1].data()[0])
+      .on("mouseenter", handleMouseover)
+      .on("mouseout", handleMouseout);
+    }
+    residue_NR[1][0].shift();
+  }
+  drawBars();
+  residue_NR = [];
+}
+
+};
+
+var clicked_fiveNR = false
+var residue_NR = [];
+
+d3.select("#five_normal_random").on("click", function(){
+  clicked_fiveNR = !clicked_fiveNR
+  if (clicked_fiveNR) {
+    fiveNR();
+  }
+  else {
+    residue_NR.push(d3.select("#fivenormrandom").selectAll("circle")); 
+    residue_NR.push(d3.select("#fivenormrandom").selectAll("line"));
+    d3.select("#animatedWrapper2").remove();
+    d3.select("#controlPanel_fNR").remove();
+  }
+});
