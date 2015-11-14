@@ -135,7 +135,7 @@ function draw() {
         .attr('opacity', 0.25)
         .attr('cx', vectors[4].attr('x2'))
         .attr('cy', vectors[4].attr('y2'))
-        .transition().duration(500)
+        .transition().duration(1000)
         .attr('cx', function(){return xRadianRange(time);})
         .transition().duration(5000)
         .remove();
