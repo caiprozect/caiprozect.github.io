@@ -1,4 +1,4 @@
-var PHASOR_SUM_SQUARE = (function() {
+var PHASOR_SUM_SQUARE = function() {
 
 var devSize = Math.min($(window).width(), $(window).height());
 var canvasWidth =  devSize < 700 ? devSize * 0.8 : 700;
@@ -37,7 +37,11 @@ var yAxis = d3.svg.axis()
   .orient('left')
   .tickSubdivide(true);
 
-var vis = d3.select('#phasorSumSquare');
+var vis = d3.select("#phasorWrapper").append("svg").attr("id", "phasorSumSquare")
+  .attr("class", "caiCanvas")
+  .attr("width", "750")
+  .attr("height", "750")
+  .style("padding-top", "20px");
 
 vis.append('svg:g')
   .attr('class', 'x axis')
@@ -102,7 +106,8 @@ var yComponent = 0;
 var cosComp = 0;
 var sinComp = 0;
 
-function draw() {
+draw = function() {
+
   cosComp = 0;
   sinComp = 0;
 
@@ -137,7 +142,7 @@ function draw() {
         .attr('cy', vectors[4].attr('y2'))
         .transition().duration(1000)
         .attr('cx', function(){return xRadianRange(time);})
-        .transition().duration(5000)
+        .transition().duration(2500)
         .remove();
     }
   }
@@ -149,5 +154,17 @@ function draw() {
   }
 }
 
- d3.timer(draw, 100);
-}) ();
+ d3.timer(function(){draw(); return !clicked}, 100);
+}
+
+var clicked = false
+
+d3.select("#complex_phasor_svg").on("click", function(){
+  clicked = !clicked
+  if (clicked) {
+    PHASOR_SUM_SQUARE();
+  }
+  else {
+    d3.select("#phasorSumSquare").remove();
+  }
+});
