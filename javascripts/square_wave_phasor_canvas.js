@@ -44,6 +44,7 @@ ctx_rsd.translate(MARGINS.top, MARGINS.left);
 
 var time = radianRange[0];
 var amplitudes = [];
+var interpolaters = [];
 
 amplitudes[0] = 1.0;
 amplitudes[1] = 0.0;
@@ -109,12 +110,7 @@ function draw() {
       ctx_rsd.fill();
 
       i = d3.interpolate([xComponent, yComponent], [xRadianRange(time), yComponent])
-      t = (time-radianRange[0])/radianRange[1]
-      ctx_rsd.beginPath();
-      ctx_rsd.arc(xRadianRange(time), yComponent, 5, 0, 2*Math.PI)
-      ctx_rsd.fillStyle = "teal"
-      ctx_rsd.globalAlpha = 0.3
-      ctx_rsd.fill();
+      interpolaters.push(i)
     }
 
   }
@@ -122,10 +118,31 @@ function draw() {
   if (time > radianRange[1])
   {
     time = radianRange[0];
-    ctx_rsd.clearRect(-1,-1,plotWidth+1,plotHeight+1);
+    d3.timer(function() {return polarToCarte();}, 100)
+    return true
   }
 }
 
-d3.timer(function() {ctx.clearRect(-1,-1,plotWidth+1,plotHeight+1); draw();}, 100);
+var t = 0;
+function polarToCarte(){
+  t += 0.01
+  if (t>1) {
+    t = 0
+    interpolaters = []
+    setTimeout(function(){ctx_rsd.clearRect(-1,-1,plotWidth+1,plotHeight+1)
+      d3.timer(function() {ctx.clearRect(-1,-1,plotWidth+1,plotHeight+1); return draw();}, 100)}, 1000)
+    return true
+  }
+  ctx_rsd.clearRect(-1,-1,plotWidth+1,plotHeight+1)
+  for (var j=0; j<interpolaters.length; j++) { 
+    ctx_rsd.beginPath();
+    ctx_rsd.arc(interpolaters[j](t)[0], interpolaters[j](t)[1], 5, 0, 2*Math.PI)
+    ctx_rsd.fillStyle = "orange"
+    ctx_rsd.globalAlpha = 0.3
+    ctx_rsd.fill();
+  }
+}
+
+d3.timer(function() {ctx.clearRect(-1,-1,plotWidth+1,plotHeight+1); return draw();}, 100);
 
 }) ();
