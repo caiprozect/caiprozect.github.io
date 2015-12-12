@@ -1,0 +1,31 @@
+#diGraphWrapper path.link {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+#diGraphWrapper circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+#diGraphWrapper text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+#diGraphWrapper #end {
+	fill: steelblue;
+}
+
+#dig_form input {border: 1px dotted #ccc; 
+	background: white; 
+	font-family: monospace; 
+	padding: 10px 20px; 
+	font-size: 18px; 
+	margin: 20px 10px 20px 0; 
+	color: red;}
+
+#dig_form input:focus { background-color:yellow; outline: none;}

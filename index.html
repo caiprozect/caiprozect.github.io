@@ -9,6 +9,7 @@
     </title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/style_for_directed_graph.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
     <meta name="viewport" content="width=device-width">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
@@ -63,6 +64,24 @@
 
       </header>
       <section>
+        <div id="directed_graph_generator">
+          <h3>Directed Graph Generator</h3>
+        </div>
+        <table>
+        <tbody>
+          <tr>
+            <td>
+              <script src="javascripts/directed_graph_generator.js"></script>
+              <form name="myform" id="dig_form" onSubmit="return handleClick()">
+                <input name="Submit" class="digraph_gen_input" type="submit" value="Add the arc" >
+                <input type="text" id="myVal_dig" class="digranph_gen_input" placeholder="Input label,label&hellip;">
+              </form>
+              <div id="diGraphWrapper" style="position: relative"></div>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+
         <div id="complex_phasor_canvas">
           <h3>Complex Plane Phasor on Canvas</h3>
         </div>
